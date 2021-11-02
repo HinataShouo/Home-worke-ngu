@@ -10,7 +10,7 @@ typedef struct Tlist {
 	struct Tlist* next;
 }Tlist;
 
-struct Tlist* ScanList(int n) {
+Tlist* ScanList(int n) {
 	if (n == 0) {
 		return NULL;
 	}
