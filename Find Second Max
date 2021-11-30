@@ -1,0 +1,79 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+
+typedef struct Ttree {
+	int Value;
+	struct Ttree* Left;
+	struct Ttree* Right;
+}Ttree;
+
+Ttree* AddTree(Ttree* Tree, int value) {
+	if (Tree == NULL) {
+		Ttree* NewTree = malloc(sizeof(Ttree));
+		assert(NewTree != NULL);
+
+		NewTree->Value = value;
+		NewTree->Right = NewTree->Left = NULL;
+
+		return NewTree;
+	}
+
+	if (value < Tree->Value) {
+		Tree->Left = AddTree(Tree->Left, value);
+	}
+	else {
+		Tree->Right = AddTree(Tree->Right, value);
+	}
+
+	return Tree;
+}
+
+void PrintTree(Ttree* Tree) {
+	if (Tree == NULL) {
+		return;
+	}
+	PrintTree(Tree->Left);
+	printf("%d ", Tree->Value);
+	PrintTree(Tree->Right);
+}
+
+void print(Ttree* Tree) {
+	PrintTree(Tree);
+	printf("\n");
+}
+
+Ttree* FindMax(Ttree* Tree) {
+	while (Tree->Right != NULL) {
+		Tree = Tree->Right;
+	}
+	return Tree;
+}
+
+Ttree* FindSecondMax(Ttree* Tree) {
+	if ((FindMax(Tree))->Left != NULL) {
+		Ttree* New = Tree;
+		while (New->Right != NULL) {
+			New = New->Right;
+		}
+		Ttree* SecondMax = FindMax(New->Left);
+		return SecondMax;
+	}
+	else while (Tree->Right->Right != NULL) {
+		Tree = Tree->Right;
+	}
+	return Tree->Right;
+}
+
+int main(void) {
+	Ttree* Tree = NULL;
+	int Array[] = { 5,3,8,12,15 };
+	for (size_t i = 0; i < sizeof(Array) / sizeof(Array[i]); ++i) {
+		Tree = AddTree(Tree, Array[i]);
+	}
+	printf("Tree = ");
+	print(Tree);
+
+	printf("Second Max = %d", FindSecondMax(Tree)->Value);
+	return 0;
+}
