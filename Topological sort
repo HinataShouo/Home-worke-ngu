@@ -4,33 +4,33 @@
 #include <malloc.h>
 #include <assert.h>
 
-int f[2000] = { 0 };
+int ArrayOfEntry[2000] = { 0 };
 int ResultArray[2000] = { 0 };
 int k = 0;
 
-void topSort(int N, int** Array, int* ResultArray) {
+void topSort(int N, int** Array) {
 	for (int i = 1; i <= N + 1; i++) {
 		if (k == N)
 			return;
 		if (i == N + 1)
 			i = 1;
-		if (f[i] == 0) {
-			for (int j = 0; j <= N; j++) {
+		if (ArrayOfEntry[i] == 0) {
+			for (int j = 1; j <= N; ++j) {
 
 				if (Array[i][j] > 0) {
-					f[j]--;
+					ArrayOfEntry[j]--;
 					Array[i][j] = 0;
 				}
 			}
-			f[i]--;
+			ArrayOfEntry[i]--;
 			ResultArray[k++] = i;
 		}
 
 	}
-
 }
 
-void print(int N,int* ResultArray) {
+
+void print(int N) {
 	for (int i = 0; i < N; i++)
 		printf("%d ", ResultArray[i]);
 }
@@ -48,6 +48,21 @@ int CheckInput(int N, int M) {
 	return 1;
 }
 
+int findCycle(int N) {
+	int counter = 0;
+	for (int i = 1; i <= N; ++i) {
+		if (ArrayOfEntry[i] != 0) {
+			counter += 1;
+		}
+	}
+	if (counter == N) {
+		return 0;
+	}
+	else {
+		return 1;
+	}
+}
+
 int main() {
 	assert(freopen("in.txt", "r", stdin) != NULL);
 	assert(freopen("out.txt", "w", stdout) != NULL);
@@ -63,10 +78,12 @@ int main() {
 	CounterLines += 2;
 
 	int** Array = (int**)malloc(N * sizeof(int*) + N * M * sizeof(int));
+	assert(Array != NULL);
 	int* start = (int*)((char*)Array + N * sizeof(int*));
-	for (int i = 0; i < N; ++i) {
+	for (int i = 1; i <= N; ++i) {
 		Array[i] = start + i * M;
 	}
+
 	int StartVertex, EndVertex;
 	for (int i = 0; i < M; i++) {
 		if (scanf("%d%d", &StartVertex, &EndVertex) != 2) {
@@ -81,34 +98,18 @@ int main() {
 		if (Array[StartVertex][EndVertex]) {
 			Array[StartVertex][EndVertex] = 1;
 		}
-		f[EndVertex]++;
+		ArrayOfEntry[EndVertex]++;
 	}
 
 	if (CounterLines < M + 2) {
 		printf("bad number of lines");
 		return 0;
 	}
-
-	int CounterString = 0;
-	for (int i = 1; i <= N; ++i) {
-		for (int j = 0; j <= N; ++j) {
-			int temp = 0;
-			if (Array[i][j]) {
-				temp = Array[i][j];
-			}
-			if (temp == 1) {
-				CounterString += 1;
-				break;
-			}
-		}
-		if (CounterString == N) {
-			printf("impossible to sort");
-			return 0;
-		}
+	if (!findCycle(N)) {
+		printf("impossible to sort");
+		return 0;
 	}
-	topSort(N,Array, ResultArray);
-	print(N, ResultArray);
-
-	free(Array);
+	topSort(N,Array);
+	print(N);
 	return 0;
 }
