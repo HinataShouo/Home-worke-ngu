@@ -1,14 +1,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
 #include <assert.h>
 
+int Array[2000][2000] = { 0 };
 int ArrayOfEntry[2000] = { 0 };
 int ResultArray[2000] = { 0 };
 int k = 0;
 
-void topSort(int N, int** Array) {
+void topSort(int N) {
 	for (int i = 1; i <= N + 1; i++) {
 		if (k == N)
 			return;
@@ -66,23 +65,18 @@ int findCycle(int N) {
 int main() {
 	assert(freopen("in.txt", "r", stdin) != NULL);
 	assert(freopen("out.txt", "w", stdout) != NULL);
+
 	int N, M;
 	int CounterLines = 0;
 	if (scanf("%d%d", &N, &M) != 2) {
 		printf("bad number of lines");
 		return 0;
 	}
+
 	if (!CheckInput(N, M)) {
 		return 0;
 	}
 	CounterLines += 2;
-
-	int** Array = (int**)malloc(N * sizeof(int*) + N * M * sizeof(int));
-	assert(Array != NULL);
-	int* start = (int*)((char*)Array + N * sizeof(int*));
-	for (int i = 1; i <= N; ++i) {
-		Array[i] = start + i * M;
-	}
 
 	int StartVertex, EndVertex;
 	for (int i = 0; i < M; i++) {
@@ -95,9 +89,7 @@ int main() {
 			printf("bad vertex");
 			break;
 		}
-		if (Array[StartVertex][EndVertex]) {
-			Array[StartVertex][EndVertex] = 1;
-		}
+		Array[StartVertex][EndVertex] = 1;
 		ArrayOfEntry[EndVertex]++;
 	}
 
@@ -105,11 +97,14 @@ int main() {
 		printf("bad number of lines");
 		return 0;
 	}
+
 	if (!findCycle(N)) {
 		printf("impossible to sort");
 		return 0;
 	}
-	topSort(N,Array);
+
+	topSort(N);
 	print(N);
+
 	return 0;
 }
