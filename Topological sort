@@ -1,0 +1,114 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
+#include <assert.h>
+
+int f[2000] = { 0 };
+int ResultArray[2000] = { 0 };
+int k = 0;
+
+void topSort(int N, int** Array, int* ResultArray) {
+	for (int i = 1; i <= N + 1; i++) {
+		if (k == N)
+			return;
+		if (i == N + 1)
+			i = 1;
+		if (f[i] == 0) {
+			for (int j = 0; j <= N; j++) {
+
+				if (Array[i][j] > 0) {
+					f[j]--;
+					Array[i][j] = 0;
+				}
+			}
+			f[i]--;
+			ResultArray[k++] = i;
+		}
+
+	}
+
+}
+
+void print(int N,int* ResultArray) {
+	for (int i = 0; i < N; i++)
+		printf("%d ", ResultArray[i]);
+}
+
+int CheckInput(int N, int M) {
+	if (N < 0 || N > 2000) {
+		printf("bad number of vertices");
+		return 0;
+	}
+
+	if (M < 0 || M >(N * (N + 1) / 2)) {
+		printf("bad number of edges");
+		return 0;
+	}
+	return 1;
+}
+
+int main() {
+	assert(freopen("in.txt", "r", stdin) != NULL);
+	assert(freopen("out.txt", "w", stdout) != NULL);
+	int N, M;
+	int CounterLines = 0;
+	if (scanf("%d%d", &N, &M) != 2) {
+		printf("bad number of lines");
+		return 0;
+	}
+	if (!CheckInput(N, M)) {
+		return 0;
+	}
+	CounterLines += 2;
+
+	int** Array = (int**)malloc(N * sizeof(int*) + N * M * sizeof(int));
+	int* start = (int*)((char*)Array + N * sizeof(int*));
+	for (int i = 0; i < N; ++i) {
+		Array[i] = start + i * M;
+	}
+	int StartVertex, EndVertex;
+	for (int i = 0; i < M; i++) {
+		if (scanf("%d%d", &StartVertex, &EndVertex) != 2) {
+			printf("bad number of lines");
+			return 0;
+		}
+		CounterLines += 1;
+		if (StartVertex == EndVertex) {
+			printf("bad vertex");
+			break;
+		}
+		if (Array[StartVertex][EndVertex]) {
+			Array[StartVertex][EndVertex] = 1;
+		}
+		f[EndVertex]++;
+	}
+
+	if (CounterLines < M + 2) {
+		printf("bad number of lines");
+		return 0;
+	}
+
+	int CounterString = 0;
+	for (int i = 1; i <= N; ++i) {
+		for (int j = 0; j <= N; ++j) {
+			int temp = 0;
+			if (Array[i][j]) {
+				temp = Array[i][j];
+			}
+			if (temp == 1) {
+				CounterString += 1;
+				break;
+			}
+		}
+		if (CounterString == N) {
+			printf("impossible to sort");
+			return 0;
+		}
+	}
+	topSort(N,Array, ResultArray);
+	print(N, ResultArray);
+
+	free(Array);
+	return 0;
+}
