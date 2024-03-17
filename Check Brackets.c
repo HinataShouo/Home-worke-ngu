@@ -18,7 +18,7 @@ Tlist* ScanList(int n) {
 	assert(list != NULL);
 
 	if (scanf("%c", &list->value) != 1) {
-		return NULL;
+		return NULL; //assert
 	}
 
 	list->next = ScanList(n - 1);
@@ -27,7 +27,7 @@ Tlist* ScanList(int n) {
 }
 
 void Push(Tlist** list, char value) {
-	struct Tlist* new = malloc(sizeof(*new));
+	struct Tlist* new = malloc(sizeof(*new)); //заебал, ты же написал typedef (8 строка), можно не писать struct
 	assert(new != NULL);
 
 	new->value = value;
@@ -60,11 +60,11 @@ bool IsMatch(char a, char b) {
 }
 
 void Check(Tlist** list) {
-	Tlist* s = NULL;
+	Tlist* s = NULL; //когда-нибудь я заслужу уважение и буду читать код с нормально названными переменными
 
 	while (list) {
 		char c = (*list)->value;
-		if ( c == EndBrackets(c) ) {
+		if ( c == EndBrackets(c) ) { //нахуя ты присваиваешь значение? char и bool?
 
 			if (s == NULL || !IsMatch(Pop(&s), c)){
 				printf("not ok...\n");
@@ -74,7 +74,7 @@ void Check(Tlist** list) {
 
 		}
 
-		else {
+		else { //А зачем тебе StartBrackets? В твой список будет заноситься всё кроме EndBrackets
 			Push(&s, c);
 		}
 	}
